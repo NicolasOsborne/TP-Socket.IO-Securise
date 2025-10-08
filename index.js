@@ -18,6 +18,17 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend/index.html'))
 })
 
+// Connexion Socket.IO
+io.on('connection', (socket) => {
+  console.log(`[Socket.IO] Client connecté: ${socket.id}`)
+
+  socket.emit('notes_updated', notes)
+
+  socket.on('disconnect', () => {
+    console.log(`[Socket.IO] Client déconnecté: ${socket.id}`)
+  })
+})
+
 // Routes API
 // GET /notes - Récupérer toutes les notes
 app.get('/notes', (req, res) => {
@@ -44,6 +55,8 @@ app.post('/notes', (req, res) => {
   notes.push(newNote)
   console.log(`POST /notes - Nouvelle note ajoutée avec ID: ${newNote.id}`)
 
+  io.emit('notes_updated', notes)
+
   res.status(201).json(newNote)
 })
 
@@ -68,10 +81,12 @@ app.put('/notes/:id', (req, res) => {
 
   console.log(`PUT /notes/${noteId} - Note mise à jour.`)
 
+  io.emit('notes_updated', notes)
+
   res.json(notes[noteIndex])
 })
 
-// DELETE /notes/:id - Supprime une note.
+// DELETE /notes/:id - Supprimer une note.
 app.delete('/notes/:id', (req, res) => {
   const noteId = parseInt(req.params.id, 10)
   const initialLength = notes.length
@@ -83,6 +98,8 @@ app.delete('/notes/:id', (req, res) => {
   }
 
   console.log(`DELETE /notes/${noteId} - Note supprimée.`)
+
+  io.emit('notes_updated', notes)
 
   res.status(204).send()
 })
