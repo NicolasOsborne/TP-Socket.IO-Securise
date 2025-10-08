@@ -15,8 +15,42 @@ const formCancelBtn = document.getElementById('form-cancel-btn')
 const modalCloseBtn = document.getElementById('modal-close-btn')
 
 // Pour l'instant, on simule un utilisateur (avant l'authentification)
-const CURRENT_AUTHOR_ID = 1
-const CURRENT_AUTHOR_NAME = 'Utilisateur Test'
+let AUTH_TOKEN = null
+let CURRENT_USER_ID = null
+const CURRENT_USER_NAME = 'Utilisateur Test'
+
+function getAuthHeaders() {
+  if (!AUTH_TOKEN) {
+    return { 'Content-Type': 'application/json' }
+  }
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${AUTH_TOKEN}`,
+  }
+}
+
+async function authenticateTestUser() {
+  try {
+    const response = await fetch('/auth/login_test')
+    if (!response.ok)
+      throw new Error('Échec de la récupération du token de test.')
+
+    const data = await response.json()
+
+    AUTH_TOKEN = data.token
+    CURRENT_USER_ID = data.userId
+
+    console.log(`[AUTH] Connexion de test réussie. User ID: ${CURRENT_USER_ID}`)
+
+    fetchNotes()
+  } catch (error) {
+    console.error("Erreur lors de l'authentification de test:", error)
+    alert(
+      "Erreur lors de l'authentification de test. Les fonctionnalités d'écriture seront désactivées."
+    )
+    fetchNotes()
+  }
+}
 
 /**
  * Crée le HTML pour une note individuelle (Post-it).
@@ -34,8 +68,8 @@ function createNoteElement(note) {
   const author = document.createElement('div')
   author.className = 'note-author'
   const authorName =
-    note.authorId === CURRENT_AUTHOR_ID
-      ? `${CURRENT_AUTHOR_NAME} (Moi)`
+    note.authorId === CURRENT_USER_ID
+      ? `${CURRENT_USER_NAME} (Moi)`
       : `Auteur ID: ${note.authorId || 'N/A'}`
   author.textContent = `Créé par: ${authorName}`
 
@@ -50,7 +84,7 @@ function createNoteElement(note) {
   deleteBtn.textContent = 'Supprimer'
   deleteBtn.addEventListener('click', () => deleteNote(note.id))
 
-  if (note.authorId === CURRENT_AUTHOR_ID) {
+  if (note.authorId === CURRENT_USER_ID) {
     actions.appendChild(editBtn)
     actions.appendChild(deleteBtn)
   }
@@ -104,9 +138,14 @@ async function createNote(content) {
   try {
     const response = await fetch('/notes', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ content: content }),
     })
+
+    if (response.status === 401 || response.status === 403) {
+      alert('Action refusée. Vous devez être connecté pour créer une note.')
+      throw new Error(`Erreur d'autorisation: ${response.status}`)
+    }
     if (!response.ok) throw new Error('Échec de la création de la note.')
   } catch (error) {
     console.error('Erreur POST:', error)
@@ -123,9 +162,17 @@ async function updateNote(id, content) {
   try {
     const response = await fetch(`/notes/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ content: content }),
     })
+    if (response.status === 401) {
+      alert('Action refusée. Vous devez être connecté pour modifier une note.')
+      throw new Error(`Erreur d'authentification: 401`)
+    }
+    if (response.status === 403) {
+      alert('Action refusée. Vous ne pouvez modifier que vos propres notes.')
+      throw new Error(`Erreur d'autorisation: 403`)
+    }
     if (!response.ok) throw new Error('Échec de la mise à jour de la note.')
   } catch (error) {
     console.error('Erreur PUT:', error)
@@ -141,7 +188,18 @@ async function deleteNote(id) {
   if (!confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) return
 
   try {
-    const response = await fetch(`/notes/${id}`, { method: 'DELETE' })
+    const response = await fetch(`/notes/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    })
+    if (response.status === 401) {
+      alert('Action refusée. Vous devez être connecté pour supprimer une note.')
+      throw new Error(`Erreur d'authentification: 401`)
+    }
+    if (response.status === 403) {
+      alert('Action refusée. Vous ne pouvez supprimer que vos propres notes.')
+      throw new Error(`Erreur d'autorisation: 403`)
+    }
     if (!response.ok) {
       const errorBody = await response.text()
       throw new Error(
@@ -219,4 +277,5 @@ socket.on('notes_updated', (updatedNotes) => {
   renderNotes(updatedNotes)
 })
 
-fetchNotes()
+// fetchNotes()
+authenticateTestUser()

@@ -64,6 +64,18 @@ io.on('connection', (socket) => {
   })
 })
 
+// Simulation de connexion
+app.get('/auth/login_test', (req, res) => {
+  const userId = 1
+  const payload = { userId: userId, username: 'utilisateur_test' }
+
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
+
+  console.log(`[AUTH] Token de test généré pour l'utilisateur ID: ${userId}`)
+
+  res.json({ token, userId })
+})
+
 // Routes API
 // GET /notes - Récupérer toutes les notes
 app.get('/notes', (req, res) => {
