@@ -12,7 +12,49 @@
 </head>
 
 <body>
+   <div id="main-container">
+      <div id="dashboard-window" class="window">
+         <div class="title-bar">
+            <div class="title-bar-text">Tableau de Bord Collaboratif</div>
+            <div class="title-bar-controls">
+               <button aria-label="Minimize"></button>
+               <button aria-label="Maximize"></button>
+               <button aria-label="Close"></button>
+            </div>
+         </div>
 
+         <div class="window-body">
+            <menu class="menu-bar">
+               <button id="btn-refresh">Afficher/Rafraîchir les Notes</button>
+               <button id="btn-add-note">Ajouter une Nouvelle Note</button>
+            </menu>
+
+            <div id="notes-display-area">
+               <p id="loading-message">Chargement des notes...</p>
+            </div>
+         </div>
+      </div>
+      <div id="modal-form-window" class="window hidden">
+         <div class="title-bar">
+            <div class="title-bar-text" id="modal-title">Ajouter une Note</div>
+            <div class="title-bar-controls">
+               <button aria-label="Close" id="modal-close-btn"></button>
+            </div>
+         </div>
+         <div class="window-body">
+            <form id="note-form">
+               <label for="note-content">Contenu de la note:</label>
+               <textarea id="note-content" required></textarea>
+               <input type="hidden" id="note-id-hidden">
+               <div class="form-controls">
+                  <button type="submit" id="form-submit-btn">Enregistrer</button>
+                  <button type="button" id="form-cancel-btn">Annuler</button>
+               </div>
+            </form>
+         </div>
+      </div>
+
+   </div>
 
    <script src="/socket.io/socket.io.js"></script>
    <script src="js/script.js"></script>

@@ -1,11 +1,15 @@
 :root {
-  --gray-light: #c0c0c0;
-  --gray-dark: #808080;
-  --white: #ffffff;
-  --black: #000000;
-  --blue-title: #000080;
-  --blue-highlight: #1084d0;
-  --font-family-classic: 'Inter', sans-serif;
+  --win95-bg: #c0c0c0;
+  --win95-title: #000080;
+  --win95-border-light: #ffffff;
+  --win95-border-dark: #000000;
+  --win95-border-shadow: #808080;
+  --win95-text: #000000;
+  --win95-highlight: #0000a8;
+
+  --note-bg: #ffffcc;
+
+  --font-family-classic: 'MS Sans Serif', 'Arial', sans-serif;
 }
 
 body {
@@ -15,6 +19,198 @@ body {
   padding: 20px;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   min-height: 100vh;
+}
+
+.window {
+  background-color: var(--win95-bg);
+  border: 1px solid var(--win95-border-dark);
+  box-shadow: inset -1px -1px var(--win95-border-shadow),
+    inset 1px 1px var(--win95-border-light),
+    -2px -2px var(--win95-border-shadow);
+}
+
+#dashboard-window {
+  width: 90%;
+  max-width: 1000px;
+  height: 700px;
+  display: flex;
+  flex-direction: column;
+}
+
+.title-bar {
+  background-color: var(--win95-title);
+  color: var(--win95-border-light);
+  padding: 3px 5px;
+  font-weight: bold;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: default;
+}
+
+.title-bar-text {
+  flex-grow: 1;
+  padding-left: 5px;
+}
+
+.title-bar-controls {
+  display: flex;
+}
+
+.title-bar-controls button {
+  width: 18px;
+  height: 16px;
+  margin-left: 2px;
+  background-color: var(--win95-bg);
+  color: var(--win95-text);
+  font-size: 0.7em;
+  line-height: 1;
+  cursor: pointer;
+  border: 1px solid var(--win95-border-dark);
+  box-shadow: inset -1px -1px var(--win95-border-dark),
+    inset 1px 1px var(--win95-border-light);
+}
+
+.title-bar-controls button:active {
+  box-shadow: inset -1px -1px var(--win95-border-light),
+    inset 1px 1px var(--win95-border-dark);
+}
+.title-bar-controls button[aria-label='Close']::before {
+  content: 'x';
+}
+
+.window-body {
+  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-bar {
+  display: flex;
+  gap: 5px;
+  padding: 2px 0;
+  margin-bottom: 10px;
+  list-style: none;
+}
+
+.menu-bar button,
+.note-actions button,
+.form-controls button {
+  background-color: var(--win95-bg);
+  padding: 5px 10px;
+  border: 1px solid var(--win95-border-dark);
+  box-shadow: inset -1px -1px var(--win95-border-dark),
+    inset 1px 1px var(--win95-border-light);
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.menu-bar button:active,
+.note-actions button:active,
+.form-controls button:active {
+  box-shadow: inset -1px -1px var(--win95-border-light),
+    inset 1px 1px var(--win95-border-dark);
+}
+
+#notes-display-area {
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-content: flex-start;
+  overflow-y: auto;
+  border: 2px solid;
+  border-color: var(--win95-border-dark) var(--win95-border-light)
+    var(--win95-border-light) var(--win95-border-dark);
+  padding: 10px;
+}
+
+#loading-message {
+  color: var(--win95-text);
+  padding: 10px;
+  font-style: italic;
+}
+
+.note-card {
+  width: 280px;
+  min-height: 180px;
+  max-height: 300px;
+  background-color: var(--note-bg);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #777;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4);
+}
+
+.note-content {
+  padding: 10px;
+  flex-grow: 1;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  border-bottom: 1px dashed #ccc;
+  font-size: 0.9em;
+}
+
+.note-author {
+  font-style: italic;
+  color: #666;
+  padding: 5px 10px;
+  font-size: 0.8em;
+}
+
+.note-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  padding: 5px 10px;
+}
+
+.note-actions button {
+  font-size: 0.8em;
+  padding: 3px 8px;
+}
+
+#modal-form-window {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  z-index: 1000;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+#note-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+#note-form textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 5px;
+  margin-bottom: 10px;
+  resize: vertical;
+  border: 1px solid var(--win95-border-dark);
+  box-shadow: inset 1px 1px var(--win95-border-dark),
+    inset -1px -1px var(--win95-border-light);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.hidden {
+  display: none !important;
 }
