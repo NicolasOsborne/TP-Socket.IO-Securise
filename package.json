@@ -1,0 +1,25 @@
+{
+  "name": "tp-socket.io-securise",
+  "version": "1.0.0",
+  "description": "Ce TP est réalisé dans le cadre du module \"Applications en Temps Réel\" en M2 Ingénierie du Web à l'ESGI, dispensé par Laurent BELLON.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicolasOsborne/TP-Socket.IO-Securise.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NicolasOsborne/TP-Socket.IO-Securise/issues"
+  },
+  "homepage": "https://github.com/NicolasOsborne/TP-Socket.IO-Securise#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  }
+}
