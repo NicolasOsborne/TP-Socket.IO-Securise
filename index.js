@@ -114,6 +114,15 @@ app.put('/notes/:id', authenticateToken, (req, res) => {
     return res.status(404).json({ error: 'Note introuvable.' })
   }
 
+  if (notes[noteIndex].authorId !== currentUserId) {
+    console.log(
+      `PUT /notes/${noteId} Refus 403. User ${currentUserId} n'est pas l'auteur (${notes[noteIndex].authorId}).`
+    )
+    return res.status(403).json({
+      error: 'Accès interdit. Vous ne pouvez modifier que vos propres notes.',
+    })
+  }
+
   notes[noteIndex].content = content.trim()
 
   console.log(
@@ -130,13 +139,22 @@ app.delete('/notes/:id', authenticateToken, (req, res) => {
   const noteId = parseInt(req.params.id, 10)
   const currentUserId = req.userId
 
-  const initialLength = notes.length
+  const noteToDelete = notes.find((n) => n.id === noteId)
 
-  notes = notes.filter((n) => n.id !== noteId)
-
-  if (notes.length === initialLength) {
+  if (!noteToDelete) {
     return res.status(404).json({ error: 'Note introuvable.' })
   }
+
+  if (noteToDelete.authorId !== currentUserId) {
+    console.log(
+      `[REST] DELETE /notes/${noteId} Refus 403. User ${currentUserId} n'est pas l'auteur (${noteToDelete.authorId}).`
+    )
+    return res.status(403).json({
+      error: 'Accès interdit. Vous ne pouvez supprimer que vos propres notes.',
+    })
+  }
+
+  notes = notes.filter((n) => n.id !== noteId)
 
   console.log(`DELETE /notes/${noteId} - Note supprimée.`)
 
