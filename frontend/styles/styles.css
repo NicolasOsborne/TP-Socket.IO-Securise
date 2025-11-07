@@ -91,10 +91,16 @@ body {
 
 .menu-bar {
   display: flex;
-  gap: 5px;
+  flex-direction: column;
+  gap: 10px;
   padding: 2px 0;
   margin-bottom: 10px;
-  list-style: none;
+}
+
+.menu-bar-row {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 }
 
 .menu-bar button,
@@ -120,8 +126,9 @@ body {
 #notes-display-area {
   flex-grow: 1;
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 8px;
   align-content: flex-start;
   overflow-y: auto;
   border: 2px solid;
@@ -137,7 +144,7 @@ body {
 }
 
 .note-card {
-  width: 280px;
+  width: 200px;
   min-height: 180px;
   max-height: 300px;
   background-color: var(--note-bg);
@@ -149,12 +156,16 @@ body {
 }
 
 .note-content {
+  background-color: #ffffff;
+  border: 2px solid;
+  border-color: var(--win95-border-dark) var(--win95-border-light)
+    var(--win95-border-light) var(--win95-border-dark);
   padding: 10px;
+  margin: 8px;
   flex-grow: 1;
   white-space: pre-wrap;
   overflow-y: auto;
-  border-bottom: 1px dashed #ccc;
-  font-size: 0.9em;
+  font-size: 1em;
 }
 
 .note-author {
@@ -186,10 +197,23 @@ body {
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
-#note-form label {
+#note-form label,
+#register-form label,
+#login-form label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+}
+
+.register-form-row,
+.login-form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 #note-form textarea {
@@ -209,6 +233,24 @@ body {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+#login-window,
+#register-window {
+  position: absolute;
+  top: 30%;
+  left: 30%;
+  transform: (-30%, -30%);
+  z-index: 10;
+}
+
+#message-window,
+#confirm-window {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: (-30%, -30%);
+  z-index: 50;
 }
 
 .hidden {

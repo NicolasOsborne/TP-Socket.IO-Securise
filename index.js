@@ -4,18 +4,29 @@ const { Server } = require('socket.io')
 const path = require('path')
 
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
+const SALT_ROUNDS = 10
+
 require('dotenv').config()
+
+const JWT_SECRET = process.env.JWT_SECRET
 
 let notes = []
 let currentId = 1
 
-const JWT_SECRET = process.env.JWT_SECRET
+let users = []
+let currentUserId = 1
 
 const app = express()
 app.use(express.json())
 
 const server = http.createServer(app)
-const io = new Server(server)
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  },
+})
 
 app.use(express.static(path.join(__dirname, 'frontend')))
 
@@ -24,7 +35,6 @@ function authenticateToken(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1]
 
   if (token == null) {
-    console.log('Token absent.')
     return res.status(401).json({ error: 'Accès non autorisé.' })
   }
 
@@ -64,23 +74,114 @@ io.on('connection', (socket) => {
   })
 })
 
-// Simulation de connexion
-app.get('/auth/login_test', (req, res) => {
-  const userId = 1
-  const payload = { userId: userId, username: 'utilisateur_test' }
+// Authentification utilisateur
+// Inscription d'un nouvel utilsateur
+app.post('/register', async (req, res) => {
+  const { username, password } = req.body
 
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ error: "Nom d'utilisateur et mot de passe requis !" })
+  }
 
-  console.log(`[AUTH] Token de test généré pour l'utilisateur ID: ${userId}`)
+  if (users.find((u) => u.username === username)) {
+    return res
+      .status(409)
+      .json({ error: "Ce nom d'utilisateur est déjà pris !" })
+  }
 
-  res.json({ token, userId })
+  try {
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
+
+    const newUser = {
+      id: currentUserId++,
+      username: username,
+      password: hashedPassword,
+    }
+
+    users.push(newUser)
+    console.log(
+      `[REGISTER] Nouvel utilisateur enregistré : ${username} (ID: ${newUser.id})`
+    )
+
+    const token = jwt.sign(
+      {
+        userId: newUser.id,
+        username: newUser.username,
+      },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    )
+
+    res.status(201).json({
+      message: 'Vous êtes bien inscrit !',
+      token: token,
+      userId: newUser.id,
+      username: newUser.username,
+    })
+  } catch (error) {
+    console.error("[REGISTER] Erreur lors de l'inscription.", error)
+    res.status(500).json({ error: "Erreur lors de l'inscription." })
+  }
+})
+
+// Connexion d'un utilisateur existant
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body
+
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ error: "Nom d'utilisateur et mot de passe requis !" })
+  }
+
+  const user = users.find((u) => u.username === username)
+
+  if (!user) {
+    return res.status(401).json({ error: "Nom d'utilisateur invalide !" })
+  }
+
+  try {
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Mot de passe invalide !' })
+    }
+
+    const payload = {
+      userId: user.id,
+      username: user.username,
+    }
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' })
+
+    console.log(`[LOGIN] Connexion réussie pour l'utilisateur : ${username}`)
+
+    res.json({
+      token: token,
+      userId: user.id,
+      username: user.username,
+    })
+  } catch (error) {
+    console.error('[LOGIN] Erreur de connexion.', error)
+    res.status(500).json({ error: 'Erreur serveur lors de la connexion.' })
+  }
 })
 
 // Routes API
 // GET /notes - Récupérer toutes les notes
 app.get('/notes', (req, res) => {
   console.log(`GET /notes - ${notes.length} notes retournées.`)
-  res.json(notes)
+  const notesWithAuthors = notes.map((note) => {
+    const author = users.find((u) => u.id === note.authorId)
+    return {
+      ...note,
+      authorName: author ? author.username : 'Utilisateur Inconnu',
+    }
+  })
+
+  // 💡 Renvoyer le nouveau tableau de notes
+  res.json(notesWithAuthors)
 })
 
 // POST /notes - Créer une nouvelle

@@ -9,6 +9,7 @@
    <link rel="preconnect" href="https://fonts.googleapis.com">
    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+   <link rel="stylesheet" href="https://unpkg.com/98.css">
 </head>
 
 <body>
@@ -25,8 +26,14 @@
 
          <div class="window-body">
             <menu class="menu-bar">
-               <button id="btn-refresh">Afficher/Rafraîchir les Notes</button>
-               <button id="btn-add-note">Ajouter une Nouvelle Note</button>
+               <div class="menu-bar-row">
+                  <button id="btn-register">S'inscrire</button>
+                  <button id="btn-login">Se connecter</button>
+               </div>
+               <div class="menu-bar-row">
+                  <button id="btn-refresh">Afficher/Rafraîchir les Notes</button>
+                  <button id="btn-add-note">Ajouter une Nouvelle Note</button>
+               </div>
             </menu>
 
             <div id="notes-display-area">
@@ -53,6 +60,94 @@
             </form>
          </div>
       </div>
+
+      <div id="login-window" class="window hidden">
+         <div class="title-bar">
+            <div class="title-bar-text">Connexion Utilisateur</div>
+            <div class="title-bar-controls">
+               <button aria-label="Close" id="login-close-btn"></button>
+            </div>
+         </div>
+         <div class="window-body">
+            <div id="login-user-info">
+               <p>Connecté en tant que : <strong id="current-username">Non connecté</strong></p>
+               <button id="btn-logout">Déconnexion</button>
+               <hr>
+            </div>
+
+            <form id="login-form">
+               <h4>Connexion avec un compte existant</h4>
+               <div class="login-form-row">
+                  <label for="login-username">Nom d'utilisateur:</label>
+                  <input type="text" id="login-username" required>
+               </div>
+               <div class="login-form-row">
+                  <label for="login-password">Mot de passe:</label>
+                  <input type="password" id="login-password" required>
+               </div>
+               <div class="form-controls">
+                  <button type="submit">Se Connecter</button>
+               </div>
+            </form>
+         </div>
+      </div>
+
+      <div id="register-window" class="window hidden">
+         <div class="title-bar">
+            <div class="title-bar-text">Inscription Utilisateur</div>
+            <div class="title-bar-controls">
+               <button aria-label="Close" id="register-close-btn"></button>
+            </div>
+         </div>
+         <div class="window-body">
+            <form id="register-form">
+               <h4>Créer un nouveau compte</h4>
+               <div class="register-form-row">
+                  <label for="register-username">Nom d'utilisateur:</label>
+                  <input type="text" id="register-username" required>
+               </div>
+               <div class="register-form-row">
+                  <label for="register-password">Mot de passe:</label>
+                  <input type="password" id="register-password" required>
+               </div>
+               <div class="form-controls">
+                  <button type="submit">S'inscrire</button>
+               </div>
+            </form>
+         </div>
+      </div>
+
+      <div id="message-window" class="window hidden">
+         <div class="title-bar">
+            <div class="title-bar-text" id="message-title">Message</div>
+            <div class="title-bar-controls">
+               <button aria-label="Close" id="message-close-btn"></button>
+            </div>
+         </div>
+         <div class="window-body">
+            <p id="message-content"></p>
+            <div class="form-controls" style="justify-content: center; margin-top: 15px;">
+               <button id="message-ok-btn">OK</button>
+            </div>
+         </div>
+      </div>
+
+      <div id="confirm-window" class="window hidden">
+         <div class="title-bar">
+            <div class="title-bar-text" id="confirm-title">Confirmation</div>
+            <div class="title-bar-controls">
+               <button aria-label="Close" id="confirm-close-btn"></button>
+            </div>
+         </div>
+         <div class="window-body">
+            <p id="confirm-content"></p>
+            <div class="form-controls" style="justify-content: center; margin-top: 15px;">
+               <button id="confirm-yes-btn">Oui</button>
+               <button id="confirm-no-btn">Annuler</button>
+            </div>
+         </div>
+      </div>
+   </div>
 
    </div>
 
